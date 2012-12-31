@@ -1,4 +1,4 @@
-from charsheet.models import Character,Skill,PRO_ALL
+from charsheet.models import Character,Skill,PROS
 from charsheet.models import Weapon,Armour,Affliction,Misc
 from charsheet.models import Modifier
 from django.contrib import admin
@@ -29,16 +29,16 @@ class SkillInline(admin.TabularInline):
 
 class CharacterAdmin(admin.ModelAdmin):
 
-  pro = [x.lower() for x in PRO_ALL]
+  pro = [x.lower() for x in PROS]
   pro_fields = [ (x+'_vl',x+'_pm',x+'_tm',x+'_ap',x+'_max') for x in pro ]
 
   list_display = ('name',)
 
-  #('nationality','socialclass','speciality','striker'),
   fieldsets = (
       (None, {
         'fields': (
-          ('name','age','gender'), #,'race'),
+          ('name','age','gender','race'),
+          ('nationality','socialclass','speciality','striker'),
           'max_points',
         ),
       }),

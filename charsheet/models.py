@@ -1,6 +1,9 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+def choices(options):
+  return zip(options,options)
+
 def genProperty(pname):
   pro_vl = models.IntegerField( default=2,
                                 verbose_name="%s VL"%(pname,),
@@ -34,15 +37,19 @@ def sanity():
 
 PRO_MENTAL = ["APT","CHA","MAR","SPI","WIL","WIT"]
 PRO_PHYSICAL = ["AGI","COG","FOR","PHY","PCN","REF"]
-PRO_ALL = PRO_PHYSICAL+PRO_MENTAL
-PRO_CHOICES = zip(PRO_ALL,PRO_ALL)
-#PRO_CHOICES_OPT = [("","")]+PRO_CHOICES
+PROS = PRO_PHYSICAL+PRO_MENTAL
 
 GENDERS=(
     ("M","Male"),
     ("F","Female"),
     ("O","Other"),
     )
+
+NATIONALITIES = ["Meno","Katia","Aguin","Deben"]
+RACES = ["Human","Elf","Dwarf"]
+SPECIALITIES = ["Warrior","Tekkan","Mage"]
+SOCIALCLASSES = ["Peasant","Scholar","Adventurer"]
+STRIKERS = ["Fast Striker","Ki Striker","Power Striker"]
 
 class Character(models.Model):
 
@@ -52,11 +59,16 @@ class Character(models.Model):
   age = models.PositiveIntegerField()
   max_points = models.PositiveIntegerField(default=0)
 
-  #nationality = models.ForeignKey(Nationality)
-  #speciality = models.ForeignKey(Speciality)
-  #race = models.ForeignKey(Race)
-  #socialclass = models.ForeignKey(SocialClass)
-  #striker = models.ForeignKey(Striker)
+  nationality = models.CharField( max_length=10,
+                                  choices=choices(NATIONALITIES))
+  speciality = models.CharField(max_length=10,
+                                choices=choices(SPECIALITIES))
+  race = models.CharField(max_length=10,
+                          choices=choices(RACES))
+  socialclass = models.CharField( max_length=10,
+                                  choices=choices(SOCIALCLASSES))
+  striker = models.CharField( max_length=10,
+                              choices=choices(STRIKERS))
 
   bep = models.IntegerField(default=1)
   stg = models.IntegerField(default=0)
@@ -115,12 +127,12 @@ class Character(models.Model):
   def __unicode__(self):
     return self.name
 
-SKILL_ALL = ["Acrobatics","Thrust Weapons","Survival"]
-SKILL_CHOICES = zip(SKILL_ALL,SKILL_ALL)
+SKILLS = ["Acrobatics","Thrust Weapons","Survival"]
 
 class Skill(models.Model):
   character = models.ForeignKey(Character)
-  name = models.CharField(max_length=30,choices=SKILL_CHOICES)
+  name = models.CharField(max_length=30,
+                          choices=zip(SKILLS,SKILLS))
   speciality = models.BooleanField()
   level = models.IntegerField(default=1,
                               validators=[
