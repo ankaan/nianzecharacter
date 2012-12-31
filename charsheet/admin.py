@@ -1,10 +1,6 @@
-from charsheet.models import Character,Skill,SkillChoice,PRO_ALL
-from charsheet.models import WeaponTemplate,ArmourTemplate
+from charsheet.models import Character,Skill,PRO_ALL
 from charsheet.models import Weapon,Armour,Affliction,Misc
-from charsheet.models import Nationality,Speciality,Race
-from charsheet.models import SocialClass,Striker
-from charsheet.models import GeneralBenefit,Trait,Lineage
-from charsheet.models import GeneralDeficiency,Quirk
+from charsheet.models import Modifier
 from django.contrib import admin
 
 class WeaponInline(admin.TabularInline):
@@ -23,16 +19,12 @@ class MiscInline(admin.TabularInline):
   model = Misc
   extra = 0
 
-class SkillChoiceInline(admin.TabularInline):
-  model = SkillChoice
+class ModifierInline(admin.TabularInline):
+  model = Modifier
   extra = 0
 
-class GeneralBenefitInline(admin.TabularInline):
-  model = GeneralBenefit
-  extra = 0
-
-class GeneralDeficiencyInline(admin.TabularInline):
-  model = GeneralDeficiency
+class SkillInline(admin.TabularInline):
+  model = Skill
   extra = 0
 
 class CharacterAdmin(admin.ModelAdmin):
@@ -42,14 +34,12 @@ class CharacterAdmin(admin.ModelAdmin):
 
   list_display = ('name',)
 
+  #('nationality','socialclass','speciality','striker'),
   fieldsets = (
       (None, {
         'fields': (
-          ('name','age','gender','race'),
-          ('nationality','socialclass','speciality','striker'),
+          ('name','age','gender'), #,'race'),
           'max_points',
-          'general_benefits',
-          'general_deficiencies',
         ),
       }),
       ('Properties', {
@@ -58,7 +48,7 @@ class CharacterAdmin(admin.ModelAdmin):
       ('Sanity', {
         'fields': (('balance','violence','horror','paranormal'),),
       }),
-      ('Modifiers', {
+      ('Stat Modifiers', {
         'fields': (
           ('cc_mod','sc_mod','ac_mod','mc_mod'),
           ('cc_rec_mod','sc_rec_mod','ac_rec_mod','mc_rec_mod'),
@@ -71,63 +61,11 @@ class CharacterAdmin(admin.ModelAdmin):
         'fields': (('phs_bc','mar_bc','mer_bc'),),
       }),
   )
-  inlines = [ SkillChoiceInline,
-              #GeneralBenefitInline,
-              #GeneralDeficiencyInline,
+
+  inlines = [ SkillInline,
               WeaponInline,
               ArmourInline,
               AfflictionInline,
-              MiscInline]
+              MiscInline,
+              ModifierInline]
 admin.site.register(Character,CharacterAdmin)
-
-class SkillAdmin(admin.ModelAdmin):
-  list_display = ('name','primary_pro','secondary_pro','wit_rec','cost','action')
-admin.site.register(Skill,SkillAdmin)
-
-class WeaponTemplateAdmin(admin.ModelAdmin):
-  list_display = ('name','dmg','dub_abs','dub','req','rng','act','sr')
-admin.site.register(WeaponTemplate,WeaponTemplateAdmin)
-
-class ArmourTemplateAdmin(admin.ModelAdmin):
-  list_display = ('name','dub_abs','dub','req','agi','mov','act','sc')
-admin.site.register(ArmourTemplate,ArmourTemplateAdmin)
-
-class NationalityAdmin(admin.ModelAdmin):
-  list_display = ('name','cost')
-admin.site.register(Nationality,NationalityAdmin)
-
-class SpecialityAdmin(admin.ModelAdmin):
-  list_display = ('name','cost','socialclass')
-admin.site.register(Speciality,SpecialityAdmin)
-
-class RaceAdmin(admin.ModelAdmin):
-  list_display = ('name','cost','youth','adult','old','death')
-admin.site.register(Race,RaceAdmin)
-
-class SocialClassAdmin(admin.ModelAdmin):
-  list_display = ('name','cost')
-admin.site.register(SocialClass,SocialClassAdmin)
-
-class StrikerAdmin(admin.ModelAdmin):
-  list_display = ('name','cost')
-admin.site.register(Striker,StrikerAdmin)
-
-class GeneralBenefitAdmin(admin.ModelAdmin):
-  list_display = ('name','cost')
-admin.site.register(GeneralBenefit,GeneralBenefitAdmin)
-
-class TraitAdmin(admin.ModelAdmin):
-  list_display = ('name','cost')
-admin.site.register(Trait,TraitAdmin)
-
-class LineageAdmin(admin.ModelAdmin):
-  list_display = ('name','cost')
-admin.site.register(Lineage,LineageAdmin)
-
-class GeneralDeficiencyAdmin(admin.ModelAdmin):
-  list_display = ('name','cost')
-admin.site.register(GeneralDeficiency,GeneralDeficiencyAdmin)
-
-class QuirkAdmin(admin.ModelAdmin):
-  list_display = ('name','cost')
-admin.site.register(Quirk,QuirkAdmin)

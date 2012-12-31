@@ -32,150 +32,11 @@ def sanity():
                                 MinValueValidator(-5),
                                 MaxValueValidator(5)] )
 
-class Nationality(models.Model):
-  name = models.CharField(max_length=50)
-  cost = models.IntegerField(verbose_name="CP Cost")
-
-  class Meta:
-    verbose_name_plural = 'Nationalities'
-
-  def __unicode__(self):
-    return self.name
-
-class SocialClass(models.Model):
-  name = models.CharField(max_length=50)
-  cost = models.IntegerField(verbose_name="CP Cost")
-
-  class Meta:
-    verbose_name_plural = 'Social Classes'
-
-  def __unicode__(self):
-    return self.name
-
-class Speciality(models.Model):
-  name = models.CharField(max_length=50)
-  cost = models.IntegerField(verbose_name="CP Cost")
-
-  socialclass = models.ForeignKey(SocialClass)
-
-  class Meta:
-    verbose_name_plural = 'Specialities'
-
-  def __unicode__(self):
-    return self.name
-
-class Race(models.Model):
-  name = models.CharField(max_length=50)
-  cost = models.IntegerField(verbose_name="CP Cost")
-
-  youth = models.IntegerField(verbose_name="Lower limit for youth")
-  adult = models.IntegerField(verbose_name="Lower limit for adult")
-  old = models.IntegerField(verbose_name="Lower limit for old")
-  death = models.IntegerField(verbose_name="Life expectancy")
-
-  def __unicode__(self):
-    return self.name
-
-class Striker(models.Model):
-  name = models.CharField(max_length=50)
-  cost = models.IntegerField(verbose_name="CP Cost")
-
-  def __unicode__(self):
-    return self.name
-
 PRO_MENTAL = ["APT","CHA","MAR","SPI","WIL","WIT"]
 PRO_PHYSICAL = ["AGI","COG","FOR","PHY","PCN","REF"]
 PRO_ALL = PRO_PHYSICAL+PRO_MENTAL
 PRO_CHOICES = zip(PRO_ALL,PRO_ALL)
-PRO_CHOICES_OPT = [("","")]+PRO_CHOICES
-
-class Modifier(models.Model):
-  affinity_race = models.ForeignKey(Race,
-                                    null=True,
-                                    default=None)
-
-  name = models.CharField(max_length=50)
-  cost = models.IntegerField(verbose_name="CP Cost")
-  description = models.CharField(max_length=50,blank=True)
-  nature = models.CharField(max_length=50,blank=True)
-  key_pro = models.CharField( max_length=3,
-                              blank=True,
-                              default="",
-                              choices=PRO_CHOICES_OPT,
-                              verbose_name="Key PRO")
-  chain_pro = models.CharField( max_length=3,
-                                blank=True,
-                                default="",
-                                choices=PRO_CHOICES_OPT,
-                                verbose_name="Chain PRO")
-  requirement = models.CharField(max_length=50,blank=True)
-  other = models.CharField(max_length=50,blank=True)
-
-  affinity_race = models.ForeignKey(Race,
-                                    null=True,
-                                    default=None)
-  affinity_speciality = models.ForeignKey(Speciality,
-                                          null=True,
-                                          default=None)
-  affinity_striker = models.ForeignKey( Striker,
-                                        null=True,
-                                        default=None)
-
-  class Meta:
-    abstract = True
-
-  def __unicode__(self):
-    return self.name
-
-class Benefit(Modifier):
-  pass
-
-class GeneralBenefit(Benefit):
-  pass
-
-class Trait(Benefit):
-  pass
-
-class Lineage(Benefit):
-  pass
-
-class Deficiency(Modifier):
-
-  class Meta:
-    verbose_name_plural = "Deficiencies"
-
-class GeneralDeficiency(Deficiency):
-  pass
-
-class Quirk(Deficiency):
-  pass
-
-ACTIONS=(
-    ("NONE","None"),
-    ("CCBOOST","Increase CC"),
-    ("MCBOOST","Increase MC"),
-    )
-
-class Skill(models.Model):
-  name = models.CharField(max_length=50)
-
-  primary_pro =   models.CharField( max_length=3,
-                                    choices=PRO_CHOICES,
-                                    verbose_name="Primary PRO")
-  secondary_pro = models.CharField( max_length=3,
-                                    choices=PRO_CHOICES_OPT,
-                                    blank=True,
-                                    verbose_name="Secondary PRO")
-
-  action = models.CharField(max_length=10,
-                            choices=ACTIONS,
-                            default="NONE")
-
-  wit_rec = models.IntegerField(verbose_name="WIT Rec")
-  cost = models.IntegerField(verbose_name="CP Cost")
-
-  def __unicode__(self):
-    return self.name
+#PRO_CHOICES_OPT = [("","")]+PRO_CHOICES
 
 GENDERS=(
     ("M","Male"),
@@ -191,11 +52,11 @@ class Character(models.Model):
   age = models.PositiveIntegerField()
   max_points = models.PositiveIntegerField(default=0)
 
-  nationality = models.ForeignKey(Nationality)
-  speciality = models.ForeignKey(Speciality)
-  race = models.ForeignKey(Race)
-  socialclass = models.ForeignKey(SocialClass)
-  striker = models.ForeignKey(Striker)
+  #nationality = models.ForeignKey(Nationality)
+  #speciality = models.ForeignKey(Speciality)
+  #race = models.ForeignKey(Race)
+  #socialclass = models.ForeignKey(SocialClass)
+  #striker = models.ForeignKey(Striker)
 
   bep = models.IntegerField(default=1)
   stg = models.IntegerField(default=0)
@@ -215,12 +76,7 @@ class Character(models.Model):
   wil_vl, wil_pm, wil_tm, wil_ap, wil_max = genProperty("WIL")
   wit_vl, wit_pm, wit_tm, wit_ap, wit_max = genProperty("WIT")
 
-  # Choices
-  skills = models.ManyToManyField(Skill,through='SkillChoice')
-  general_benefits = models.ManyToManyField(GeneralBenefit)
-  general_deficiencies = models.ManyToManyField(GeneralDeficiency)
-
-  # Modifiers
+  # Stat modifiers
   balance     = sanity()
   violence    = sanity()
   horror      = sanity()
@@ -259,9 +115,12 @@ class Character(models.Model):
   def __unicode__(self):
     return self.name
 
-class SkillChoice(models.Model):
+SKILL_ALL = ["Acrobatics","Thrust Weapons","Survival"]
+SKILL_CHOICES = zip(SKILL_ALL,SKILL_ALL)
+
+class Skill(models.Model):
   character = models.ForeignKey(Character)
-  skill = models.ForeignKey(Skill)
+  name = models.CharField(max_length=30,choices=SKILL_CHOICES)
   speciality = models.BooleanField()
   level = models.IntegerField(default=1,
                               validators=[
@@ -269,23 +128,9 @@ class SkillChoice(models.Model):
                                 MaxValueValidator(5)] )
   ap = models.IntegerField(verbose_name="AP",default=0)
 
-
 class Weapon(models.Model):
   character = models.ForeignKey(Character)
 
-  name    = models.CharField(max_length=50)
-  dmg     = models.IntegerField(verbose_name='DMG')
-  dub_abs = models.IntegerField(verbose_name='ABS')
-  dub     = models.IntegerField(verbose_name='DUB')
-  req     = models.IntegerField(verbose_name='REQ')
-  rng     = models.IntegerField(verbose_name='RNG')
-  act     = models.IntegerField(verbose_name='ACT')
-  sr      = models.IntegerField(verbose_name='SR')
-
-  def __unicode__(self):
-    return self.name
-
-class WeaponTemplate(models.Model):
   name    = models.CharField(max_length=50)
   dmg     = models.IntegerField(verbose_name='DMG')
   dub_abs = models.IntegerField(verbose_name='ABS')
@@ -313,25 +158,22 @@ class Armour(models.Model):
   def __unicode__(self):
     return self.name
 
-class ArmourTemplate(models.Model):
-  name    = models.CharField(max_length=50)
-  dub_abs = models.IntegerField(verbose_name='ABS')
-  dub     = models.IntegerField(verbose_name='DUB')
-  req     = models.IntegerField(verbose_name='REQ')
-  agi     = models.IntegerField(verbose_name='AGI')
-  mov     = models.IntegerField(verbose_name='MOV')
-  act     = models.IntegerField(verbose_name='ACT')
-  sc      = models.IntegerField(verbose_name='SC')
-
-  def __unicode__(self):
-    return self.name
-
 class Affliction(models.Model):
   character = models.ForeignKey(Character)
 
   name  = models.CharField(max_length=50)
   note  = models.CharField(max_length=100)
   sg      = models.IntegerField(verbose_name='SG')
+
+  def __unicode__(self):
+    return self.name
+
+class Modifier(models.Model):
+  character = models.ForeignKey(Character)
+
+  name = models.CharField(max_length=50)
+  benefit = models.BooleanField()
+  cost = models.IntegerField(default=0)
 
   def __unicode__(self):
     return self.name
@@ -344,3 +186,4 @@ class Misc(models.Model):
 
   def __unicode__(self):
     return self.name
+
