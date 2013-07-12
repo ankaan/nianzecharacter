@@ -46,10 +46,15 @@ GENDERS=(
     )
 
 NATIONALITIES = ["Meno","Katia","Aguin","Deben"]
-RACES = ["Human","Elf","Dwarf"]
+RACES = ["Human","Elf","Dwarf","Half Elf"]
 SPECIALITIES = ["Warrior","Tekkan","Mage"]
 SOCIALCLASSES = ["Peasant","Scholar","Adventurer"]
 STRIKERS = ["Fast Striker","Ki Striker","Power Striker"]
+LINAGES = ["Fast Adapt","Skilled","Keen Eye","Elven Mind","Elven Senses"]
+RACIAL_BENEFIT = ["Quick Witted","Raticination","Great Hearing","Night Vision"]
+RACIAL_PERK = ["Quick Witted","Raticination","Great Hearing","Night Vision"]
+RACIAL_QUIRK = ["Arrogand","Feeble","Greedy","Paranoia"]
+LANGUAGES = ["Menarish","Agulim","Derakon","Kemian"]
 
 class Character(models.Model):
 
@@ -69,6 +74,13 @@ class Character(models.Model):
                                   choices=choices(SOCIALCLASSES))
   striker = models.CharField( max_length=10,
                               choices=choices(STRIKERS))
+
+  lineage = models.CharField( max_length=10,
+                              choices=choices(LINAGES))
+  benefit = models.CharField( max_length=10,
+                              choices=choices(RACIAL_BENEFIT))
+
+
 
   bep = models.IntegerField(default=1)
   stg = models.IntegerField(default=0)
