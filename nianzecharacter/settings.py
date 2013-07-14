@@ -1,11 +1,13 @@
 # Django settings for nianzecharacter project.
+from os import path
+
+BASE_DIR = path.dirname(path.dirname(__file__))
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
-    ('Anders Engstrom', 'test@test.com'),
 )
 
 MANAGERS = ADMINS
@@ -13,7 +15,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/home/ankan/work/nianze/nianzecharacter/db.sqlite', # Or path to database file if using sqlite3.
+        'NAME': path.join(BASE_DIR,'/db.sqlite'), # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -79,7 +81,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'ko^l$j-vs5m(q+(p_k4@or+++2057riwi5uigzh)rw28)(*2we'
+SECRET_KEY = ''
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (

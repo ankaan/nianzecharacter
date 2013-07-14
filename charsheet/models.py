@@ -2,212 +2,192 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 def choices(options):
-  return zip(options,options)
+  if type(options) is list:
+    return zip(options,options)
+  elif type(options) is dict:
+    return sorted(options.items())
+  else:
+    raise TypeError('Options must be a list or a dict.')
 
-def genProperty(pname):
-  pro_vl = models.IntegerField( default=2,
-                                verbose_name="%s VL"%(pname,),
+def gen_attr(name):
+  stat_vl = models.IntegerField(default=0,
+                                verbose_name='%s VL'%(name),
                                 validators=[
-                                  MinValueValidator(2),
-                                  MaxValueValidator(20)] )
-  pro_pm = models.IntegerField( default=0,
-                                verbose_name="%s PM"%(pname,),
-                                validators=[
-                                  MinValueValidator(-10),
-                                  MaxValueValidator(10)] )
-  pro_tm = models.IntegerField( default=0,
-                                verbose_name="%s TM"%(pname,),
-                                validators=[
-                                  MinValueValidator(-10),
-                                  MaxValueValidator(10)] )
-  pro_ap = models.IntegerField( default=0,
-                                verbose_name="%s AP"%(pname,))
-  pro_max = models.IntegerField(default=2,
-                                verbose_name="%s Max"%(pname,),
-                                validators=[
-                                  MinValueValidator(2),
-                                  MaxValueValidator(20)] )
-  return pro_vl, pro_pm, pro_tm, pro_ap, pro_max
+                                  MinValueValidator(0),
+                                  MaxValueValidator(30)] )
+  stat_mod = models.IntegerField( default=0,
+                                  verbose_name='%s MOD'%name,
+                                  validators=[
+                                    MinValueValidator(-10),
+                                    MaxValueValidator(10)] )
+  return stat_vl, stat_mod
 
-def sanity():
-  return models.IntegerField( default=0,
-                              validators=[
-                                MinValueValidator(-5),
-                                MaxValueValidator(5)] )
+def gen_skill(name):
+  stat_lvl = models.IntegerField( default=0,
+                                  verbose_name='%s LvL'%(name),
+                                  validators=[
+                                    MinValueValidator(0),
+                                    MaxValueValidator(6)] )
+  stat_mod = models.IntegerField( default=0,
+                                  verbose_name='%s MOD'%name,
+                                  validators=[
+                                    MinValueValidator(-10),
+                                    MaxValueValidator(10)] )
+  return stat_lvl, stat_mod
 
-PRO_MENTAL = ["APT","CHA","MAR","SPI","WIL","WIT"]
-PRO_PHYSICAL = ["AGI","COG","FOR","PHY","PCN","REF"]
-PROS = PRO_PHYSICAL+PRO_MENTAL
+class Expertise(models.Model):
+  ENERGY_AFFINITY={ 'a': 'Aruhun',
+                    'g': 'Gaia',
+                    'm': 'Marchon'}
 
-GENDERS=(
-    ("M","Male"),
-    ("F","Female"),
-    ("O","Other"),
-    )
+  name = models.CharField(max_length=50)
+  ip = models.IntegerField( verbose_name='IP',
+                            default=0)
+  cs = models.IntegerField( verbose_name='CS',
+                            default=0)
+  affinity = models.CharField(max_length=1,
+                              choices=choices(ENERGY_AFFINITY),
+                              default='g')
 
-NATIONALITIES = ["Meno","Katia","Aguin","Deben"]
-RACES = ["Human","Elf","Dwarf","Half Elf"]
-SPECIALITIES = ["Warrior","Tekkan","Mage"]
-SOCIALCLASSES = ["Peasant","Scholar","Adventurer"]
-STRIKERS = ["Fast Striker","Ki Striker","Power Striker"]
-LINAGES = ["Fast Adapt","Skilled","Keen Eye","Elven Mind","Elven Senses"]
-RACIAL_BENEFIT = ["Quick Witted","Raticination","Great Hearing","Night Vision"]
-RACIAL_PERK = ["Quick Witted","Raticination","Great Hearing","Night Vision"]
-RACIAL_QUIRK = ["Arrogand","Feeble","Greedy","Paranoia"]
-LANGUAGES = ["Menarish","Agulim","Derakon","Kemian"]
+  def __unicode__(self):
+    return self.name
 
 class Character(models.Model):
+  ATTR = {'acu': 'Accuracy',
+          'bra': 'Brawn',
+          'cor': 'Coordination',
+          'foc': 'Focus',
+          'men': 'Mentality',
+          'vit': 'Vitality'}
+  
+  SKILL = { 'ath': 'Athletics',
+            'bat': 'Battle',
+            'com': 'Common',
+            'kno': 'Knowledge',
+            'mys': 'Mystical',
+            'soc': 'Social'}
+
+  GENDERS=['Male','Female','Other']
+  RACES = ['Human','Elf','Dwarf','Half Elf','Panling','Xin\'Ar','Xin\'Er']
+  NATIONALITIES = ['Meno','Katia','Aguin','Deben']
+  STRIKERS = ['Marchon Striker','Aruhun Striker','Gaia Striker']
 
   # Basic stuff
   name = models.CharField(max_length=50)
-  gender = models.CharField(max_length=1,choices=GENDERS)
-  age = models.PositiveIntegerField()
-  max_points = models.PositiveIntegerField(default=0)
+  age = models.PositiveIntegerField(default=0)
+  gender = models.CharField(max_length=6,
+                            choices=choices(GENDERS),
+                            blank=True,
+                            default='')
 
-  nationality = models.CharField( max_length=10,
-                                  choices=choices(NATIONALITIES))
-  speciality = models.CharField(max_length=10,
-                                choices=choices(SPECIALITIES))
-  race = models.CharField(max_length=10,
-                          choices=choices(RACES))
-  socialclass = models.CharField( max_length=10,
-                                  choices=choices(SOCIALCLASSES))
-  striker = models.CharField( max_length=10,
-                              choices=choices(STRIKERS))
+  race = models.CharField(max_length=20,
+                          choices=choices(RACES),
+                          blank=True,
+                          default='')
+  race_fancy = models.CharField(verbose_name='Fancy Race',
+                                max_length=20,
+                                blank=True,
+                                default='')
 
-  lineage = models.CharField( max_length=10,
-                              choices=choices(LINAGES))
-  benefit = models.CharField( max_length=10,
-                              choices=choices(RACIAL_BENEFIT))
+  nationality = models.CharField( max_length=20,
+                                  choices=choices(NATIONALITIES),
+                                  blank=True,
+                                  default='')
+  nationality_fancy = models.CharField( verbose_name='Fancy Nationality',
+                                        max_length=20,
+                                        blank=True,
+                                        default='')
 
+  striker = models.CharField( max_length=20,
+                              choices=choices(STRIKERS),
+                              blank=True,
+                              default='')
 
+  bep = models.PositiveIntegerField(verbose_name='BEP',
+                                    default=1)
+  stp = models.PositiveIntegerField(verbose_name='STP',
+                                    default=0)
 
-  bep = models.IntegerField(default=1)
-  stg = models.IntegerField(default=0)
+  # Attributes
+  acu_vl, acu_mod = gen_attr('Accuracy')
+  bra_vl, bra_mod = gen_attr('Brawn')
+  cor_vl, cor_mod = gen_attr('Coordination')
+  foc_vl, foc_mod = gen_attr('Focus')
+  men_vl, men_mod = gen_attr('Mentality')
+  vit_vl, vit_mod = gen_attr('Vitality')
 
-  # Properties
-  agi_vl, agi_pm, agi_tm, agi_ap, agi_max = genProperty("AGI")
-  cog_vl, cog_pm, cog_tm, cog_ap, cog_max = genProperty("COG")
-  for_vl, for_pm, for_tm, for_ap, for_max = genProperty("FOR")
-  phy_vl, phy_pm, phy_tm, phy_ap, phy_max = genProperty("PHY")
-  pcn_vl, pcn_pm, pcn_tm, pcn_ap, pcn_max = genProperty("PCN")
-  ref_vl, ref_pm, ref_tm, ref_ap, ref_max = genProperty("REF")
+  # Skills
+  ath_lvl, ath_mod = gen_skill('Athletics')
+  bat_lvl, bat_mod = gen_skill('Battle')
+  com_lvl, com_mod = gen_skill('Common')
+  kno_lvl, kno_mod = gen_skill('Knowledge')
+  mys_lvl, mys_mod = gen_skill('Mystical')
+  soc_lvl, soc_mod = gen_skill('Social')
 
-  apt_vl, apt_pm, apt_tm, apt_ap, apt_max = genProperty("APT")
-  cha_vl, cha_pm, cha_tm, cha_ap, cha_max = genProperty("CHA")
-  mar_vl, mar_pm, mar_tm, mar_ap, mar_max = genProperty("MAR")
-  spi_vl, spi_pm, spi_tm, spi_ap, spi_max = genProperty("SPI")
-  wil_vl, wil_pm, wil_tm, wil_ap, wil_max = genProperty("WIL")
-  wit_vl, wit_pm, wit_tm, wit_ap, wit_max = genProperty("WIT")
+  # Specializations
+  acrobatics = models.BooleanField(default=False)
+  climb = models.BooleanField(default=False)
+  dodge = models.BooleanField(default=False)
+  
+  axe = models.BooleanField(default=False)
+  bow = models.BooleanField(default=False)
+  chain_weapon = models.BooleanField(default=False)
 
-  # Stat modifiers
-  balance     = sanity()
-  violence    = sanity()
-  horror      = sanity()
-  paranormal  = sanity()
+  steal = models.BooleanField(default=False)
 
-  cc_mod = models.IntegerField(default=0,verbose_name='CC+')
-  sc_mod = models.IntegerField(default=0,verbose_name='SC+')
-  ac_mod = models.IntegerField(default=0,verbose_name='AC+')
-  mc_mod = models.IntegerField(default=0,verbose_name='MC+')
+  alchemy = models.BooleanField(default=False)
+  civics = models.BooleanField(default=False)
+  history = models.BooleanField(default=False)
 
-  cc_rec_mod = models.IntegerField(default=0,verbose_name='CC Rec+')
-  sc_rec_mod = models.IntegerField(default=0,verbose_name='SC Rec+')
-  ac_rec_mod = models.IntegerField(default=0,verbose_name='AC Rec+')
-  mc_rec_mod = models.IntegerField(default=0,verbose_name='MC Rec+')
+  channel = models.BooleanField(default=False)
+  multitrance = models.BooleanField(default=False)
+  sorcery = models.BooleanField(default=False)
 
-  actions_mod         = models.IntegerField(default=0)
-  chain_active_mod    = models.IntegerField(default=0)
-  chain_inactive_mod  = models.IntegerField(default=0)
-  initiative_mod      = models.IntegerField(default=0)
+  act = models.BooleanField(default=False)
+  deceive = models.BooleanField(default=False)
+  rhetoric = models.BooleanField(default=False)
 
-  cogdb_mod   = models.IntegerField(default=0,verbose_name='COG DB+')
-  fordb_mod   = models.IntegerField(default=0,verbose_name='FOR DB+')
-  pcndb_mod   = models.IntegerField(default=0,verbose_name='PCN DB+')
-  melee_mod   = models.IntegerField(default=0,verbose_name='Melee+')
-  basedmg_mod = models.IntegerField(default=0,verbose_name='Base DMG+')
-
-  large_phs_mod = models.IntegerField(default=0,verbose_name='Large PHS+')
-  large_mar_mod = models.IntegerField(default=0,verbose_name='Large MAR+')
-  large_mer_mod = models.IntegerField(default=0,verbose_name='Large MER+')
-
-  # Resistances
-  phs_bc = models.IntegerField(default=10,verbose_name='PHS BC')
-  mar_bc = models.IntegerField(default=10,verbose_name='MAR BC')
-  mer_bc = models.IntegerField(default=10,verbose_name='MER BC')
+  # Expertises
+  expertise = models.ManyToManyField( Expertise,
+                                      verbose_name="Expertises",
+                                        null=True,
+                                        blank=True)
 
   def __unicode__(self):
     return self.name
 
-SKILLS = ["Acrobatics","Thrust Weapons","Survival"]
+class CustomKnowledge(models.Model):
+  name = models.CharField(max_length=20)
+  char = models.ForeignKey( Character,
+                            verbose_name='Character')
 
-class Skill(models.Model):
-  character = models.ForeignKey(Character)
-  name = models.CharField(max_length=30,
-                          choices=zip(SKILLS,SKILLS))
-  speciality = models.BooleanField()
-  level = models.IntegerField(default=1,
-                              validators=[
-                                MinValueValidator(0),
-                                MaxValueValidator(5)] )
-  ap = models.IntegerField(verbose_name="AP",default=0)
+  class Meta:
+    unique_together = (('char','name'),)
+
+  def __unicode__(self):
+    return self.name
 
 class Weapon(models.Model):
   character = models.ForeignKey(Character)
-
-  name    = models.CharField(max_length=50)
-  dmg     = models.IntegerField(verbose_name='DMG')
-  dub_abs = models.IntegerField(verbose_name='ABS')
-  dub     = models.IntegerField(verbose_name='DUB')
-  req     = models.IntegerField(verbose_name='REQ')
-  rng     = models.IntegerField(verbose_name='RNG')
-  act     = models.IntegerField(verbose_name='ACT')
-  sr      = models.IntegerField(verbose_name='SR')
+  info = models.CharField(max_length=50)
 
   def __unicode__(self):
-    return self.name
+    return self.info
 
 class Armour(models.Model):
   character = models.ForeignKey(Character)
-
-  name    = models.CharField(max_length=50)
-  dub_abs = models.IntegerField(verbose_name='ABS')
-  dub     = models.IntegerField(verbose_name='DUB')
-  req     = models.IntegerField(verbose_name='REQ')
-  agi     = models.IntegerField(verbose_name='AGI')
-  mov     = models.IntegerField(verbose_name='MOV')
-  act     = models.IntegerField(verbose_name='ACT')
-  sc      = models.IntegerField(verbose_name='SC')
+  info = models.CharField(max_length=50)
 
   def __unicode__(self):
-    return self.name
+    return self.info
 
-class Affliction(models.Model):
+class Wound(models.Model):
+  SEVERITIES = ['Minor','Major','Abiding']
+
   character = models.ForeignKey(Character)
-
-  name  = models.CharField(max_length=50)
-  note  = models.CharField(max_length=100)
-  sg      = models.IntegerField(verbose_name='SG')
-
-  def __unicode__(self):
-    return self.name
-
-class Modifier(models.Model):
-  character = models.ForeignKey(Character)
-
-  name = models.CharField(max_length=50)
-  benefit = models.BooleanField()
-  cost = models.IntegerField(default=0)
+  info = models.CharField(max_length=50)
+  severity = models.CharField(max_length=50,
+                              choices=choices(SEVERITIES))
 
   def __unicode__(self):
-    return self.name
-
-class Misc(models.Model):
-  character = models.ForeignKey(Character)
-
-  name  = models.CharField(max_length=50)
-  cost  = models.IntegerField()
-
-  def __unicode__(self):
-    return self.name
-
+    return self.info
