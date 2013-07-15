@@ -1,5 +1,8 @@
-from charsheet.models import *
+from django.db import models
 from django.contrib import admin
+from django.forms import CheckboxSelectMultiple
+
+from charsheet.models import *
 
 class CustomKnowledgeInline(admin.TabularInline):
   model = CustomKnowledge
@@ -60,7 +63,7 @@ class CharacterAdmin(admin.ModelAdmin):
       }),
   )
 
-  filter_horizontal = ('expertise',)
+  #filter_horizontal = ('expertise',)
 
   inlines = [ CustomKnowledgeInline,
               WeaponInline,
