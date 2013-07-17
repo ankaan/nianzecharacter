@@ -1,0 +1,10 @@
+{% if field %}
+<div class="field-box{% if field.errors %} errors{% endif %} field-{{ field.name }}">
+  {{ field.errors }}
+  {% if checkbox %}{{ field }}{% endif %}
+  <label for="id_{{ field.html_name }}" class="{% if field.field.required %}required{% endif %} {% if checkbox %}vCheckboxLabel{% endif %}">{{ field.label }}{% if not checkbox %}:{% endif %}</label>
+  {% if not checkbox %}{{ field }}{% endif %}
+</div>
+{% else %}
+<div class="field-box"></div>
+{% endif %}

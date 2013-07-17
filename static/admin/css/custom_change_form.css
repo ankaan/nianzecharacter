@@ -1,0 +1,51 @@
+fieldset .form-group {
+  display: table;
+  width: 100%;
+}
+
+fieldset .header-group {
+  display: table-header-group;
+}
+
+fieldset .form-row {
+  display: table-row;
+}
+
+fieldset .field-box, fieldset .field-header, fieldset .filler {
+  display: table-cell;
+  float: none;
+  overflow: hidden;
+  padding: 8px 12px;
+  border-bottom: 1px solid #EEE;
+  white-space: nowrap;
+}
+
+fieldset .field-box, fieldset .field-header {
+  width: 1px;
+}
+
+fieldset .group-spec .field-box, fieldset .group-spec .field-header {
+  width: 150px;
+}
+
+fieldset .field-box label {
+  white-space: normal;
+}
+
+fieldset .field-header {
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
+}
+
+fieldset .header-group .field-header {
+  text-align: center;
+}
+
+fieldset .group-spec .header-group .field-header {
+  text-align: left;
+}
+
+fieldset .group-attr .field-box label, fieldset .group-skill .field-box label {
+  display: none;
+}

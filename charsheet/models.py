@@ -109,7 +109,6 @@ class Character(models.Model):
   men_vl, men_mod = gen_attr(ATTR['men'])
   vit_vl, vit_mod = gen_attr(ATTR['vit'])
 
-
   # Skills
   SKILL = { 'ath': 'Athletics',
             'bat': 'Battle',

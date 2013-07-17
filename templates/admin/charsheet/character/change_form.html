@@ -2,77 +2,100 @@
 {% load url from future %}
 {% load admin_urls %}
 {% load charsheet_tags %}
+{% load static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/custom_change_form.css" %}" />{% endblock %}
 
 {% block field_sets %}
 {% with form=adminform.form %}
 <fieldset class="module aligned ">
   <h2>Basic Character Data</h2>
-  {% with fields='name gender age striker race_fancy race nationality_fance nationality' %}<table class="form-row{% for f in fields.split %} field-{{ f }}{% endfor %}">{% endwith %}
-    <tr>
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.name %}
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.gender %}
-    </tr>
-    <tr>
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.age %}
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.striker %}
-    </tr>
-    <tr>
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.race_fancy %}
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.race %}
-    </tr>
-    <tr>
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.nationality_fancy %}
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.nationality %}
-    </tr>
-  </table>
+  <div class="form-group">
+    {% with fields='name gender' %}<div class="form-row{% for f in fields.split %} field-{{ f }}{% endfor %}">{% endwith %}
+      {% include "admin/charsheet/character/include/field-box.html" with field=form.name %}
+      {% include "admin/charsheet/character/include/field-box.html" with field=form.gender %}
+      <div class="filler"></div>
+    </div>
+    {% with fields='age striker' %}<div class="form-row{% for f in fields.split %} field-{{ f }}{% endfor %}">{% endwith %}
+      {% include "admin/charsheet/character/include/field-box.html" with field=form.age %}
+      {% include "admin/charsheet/character/include/field-box.html" with field=form.striker %}
+      <div class="filler"></div>
+    </div>
+    {% with fields='race_fancy race' %}<div class="form-row{% for f in fields.split %} field-{{ f }}{% endfor %}">{% endwith %}
+      {% include "admin/charsheet/character/include/field-box.html" with field=form.race_fancy %}
+      {% include "admin/charsheet/character/include/field-box.html" with field=form.race %}
+      <div class="filler"></div>
+    </div>
+    {% with fields='nationality_fance nationality' %}<div class="form-row{% for f in fields.split %} field-{{ f }}{% endfor %}">{% endwith %}
+      {% include "admin/charsheet/character/include/field-box.html" with field=form.nationality_fancy %}
+      {% include "admin/charsheet/character/include/field-box.html" with field=form.nationality %}
+      <div class="filler"></div>
+    </div>
+  </div>
 </fieldset>
 
 <fieldset class="module aligned ">
   <h2>Misc</h2>
-  {% with fields='bep stp' %}<table class="form-row{% for f in fields.split %} field-{{ f }}{% endfor %}">{% endwith %}
-    <tr>
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.bep %}
-    </tr>
-    <tr>
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.stp %}
-    </tr>
-  </table>
+  <div class="form-group">
+    {% with fields='bep' %}<div class="form-row{% for f in fields.split %} field-{{ f }}{% endfor %}">{% endwith %}
+      {% include "admin/charsheet/character/include/field-box.html" with field=form.bep %}
+      <div class="filler"></div>
+    </div>
+    {% with fields='stp' %}<div class="form-row{% for f in fields.split %} field-{{ f }}{% endfor %}">{% endwith %}
+      {% include "admin/charsheet/character/include/field-box.html" with field=form.stp %}
+      <div class="filler"></div>
+    </div>
+  </div>
 </fieldset>
 
 <fieldset class="module aligned ">
-  <h2>Attributes</h2>
-  <table class="form-row{% for f in form.Meta.model.ATTR.keys %} field-{{ f }}{% endfor %} field-attr">
-    <tr>
-      <td></td>
-      <th>VL</th>
-      <th>MOD</th>
-    </tr>
-    {% for name, vl, mod in form.attr %}
-    <tr>
-      <th>{{ name }}:</th>
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=vl %}
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=mod %}
-    </tr>
+  <h2>Attributes & Skills</h2>
+  <div class="form-group group-attr group-skill">
+    <div class="header-group">
+      <div class="form-row">
+        <div class="field-header"></div>
+        <div class="field-header">VL:</div>
+        <div class="field-header">MOD:</div>
+
+        <div class="field-header"></div>
+        <div class="field-header">LvL:</div>
+        <div class="field-header">MOD:</div>
+        <div class="filler"></div>
+      </div>
+    </div>
+    {% for a_verbose, a_vl, a_mod, s_verbose, s_lvl, s_mod in form.attr_skill %}
+    <div class="form-row field-{{ a_vl.html_name }} field-{{ a_mod.html_name }} field-{{ s_lvl.html_name }} field-{{ s_mod.html_name }}">
+      <div class="field-header">{{ a_verbose|default_if_none:"" }}</div>
+        {% include "admin/charsheet/character/include/field-box.html" with field=a_vl %}
+        {% include "admin/charsheet/character/include/field-box.html" with field=a_mod %}
+      <div class="field-header">{{ s_verbose|default_if_none:"" }}</div>
+        {% include "admin/charsheet/character/include/field-box.html" with field=s_lvl %}
+        {% include "admin/charsheet/character/include/field-box.html" with field=s_mod %}
+      <div class="filler"></div>
+    </div>
     {% endfor %}
-  </table>
+  </div>
 </fieldset>
 
 <fieldset class="module aligned ">
-  <h2>Skills</h2>
-  <table class="form-row{% for f in form.Meta.model.SKILL.keys %} field-{{ f }}{% endfor %} field-skill">
-    <tr>
-      <td></td>
-      <th>LvL</th>
-      <th>MOD</th>
-    </tr>
-    {% for name, lvl, mod in form.skill %}
-    <tr>
-      <th>{{ name }}:</th>
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=lvl %}
-      {% include "admin/charsheet/character/include/td-field-box.html" with field=mod %}
-    </tr>
+  <h2>Specializations</h2>
+  <div class="form-group group-spec">
+    <div class="header-group">
+      <div class="form-row">
+        {% for s_verbose, s_lvl, s_mod in form.skill %}
+        <div class="field-header">{{ s_verbose }}</div>
+        {% endfor %}
+        <div class="filler"></div>
+      </div>
+    </div>
+    {% for row in form.spec %}
+    <div class="form-row{% for f in row %} field-{{ f.html_name }}{% endfor %}">
+      {% for f in row %}
+      {% include "admin/charsheet/character/include/field-box.html" with field=f checkbox=1 %}
+      {% endfor %}
+    </div>
     {% endfor %}
-  </table>
+  </div>
 </fieldset>
 {% endwith %}
 {% endblock %}

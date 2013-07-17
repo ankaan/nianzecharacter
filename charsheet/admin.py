@@ -29,15 +29,27 @@ class CharacterForm(ModelForm):
 
   def attr(self):
     for k, v in sorted(Character.ATTR.items()):
+      if v is not None:
+        v += ':'
       yield v, self[k+'_vl'], self[k+'_mod']
 
   def skill(self):
     for k, v in sorted(Character.SKILL.items()):
+      if v is not None:
+        v += ':'
       yield v, self[k+'_lvl'], self[k+'_mod']
 
+  def attr_skill(self):
+    for (a,s) in map(None,self.attr(),self.skill()):
+      if a is None:
+        a = (None,)*3
+      if s is None:
+        s = (None,)*3
+      yield a+s
+
   def spec(self):
-    for skill, specnames in sorted(Character.SPEC.items()):
-      yield Character.SKILL[skill], (self[n] for n in sorted(specnames))
+    by_skill = [ [self[n] for n in sorted(specnames)] for skill, specnames in sorted(Character.SPEC.items()) ]
+    return map(None,*by_skill)
 
 class CharacterAdmin(admin.ModelAdmin):
   form = CharacterForm
