@@ -1,0 +1,78 @@
+{% extends "admin/change_form.html" %}
+{% load url from future %}
+{% load admin_urls %}
+{% load charsheet_tags %}
+
+{% block field_sets %}
+{% with form=adminform.form %}
+<fieldset class="module aligned ">
+  <h2>Basic Character Data</h2>
+  {% with fields='name gender age striker race_fancy race nationality_fance nationality' %}<table class="form-row{% for f in fields.split %} field-{{ f }}{% endfor %}">{% endwith %}
+    <tr>
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.name %}
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.gender %}
+    </tr>
+    <tr>
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.age %}
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.striker %}
+    </tr>
+    <tr>
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.race_fancy %}
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.race %}
+    </tr>
+    <tr>
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.nationality_fancy %}
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.nationality %}
+    </tr>
+  </table>
+</fieldset>
+
+<fieldset class="module aligned ">
+  <h2>Misc</h2>
+  {% with fields='bep stp' %}<table class="form-row{% for f in fields.split %} field-{{ f }}{% endfor %}">{% endwith %}
+    <tr>
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.bep %}
+    </tr>
+    <tr>
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=form.stp %}
+    </tr>
+  </table>
+</fieldset>
+
+<fieldset class="module aligned ">
+  <h2>Attributes</h2>
+  <table class="form-row{% for f in form.Meta.model.ATTR.keys %} field-{{ f }}{% endfor %} field-attr">
+    <tr>
+      <td></td>
+      <th>VL</th>
+      <th>MOD</th>
+    </tr>
+    {% for name, vl, mod in form.attr %}
+    <tr>
+      <th>{{ name }}:</th>
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=vl %}
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=mod %}
+    </tr>
+    {% endfor %}
+  </table>
+</fieldset>
+
+<fieldset class="module aligned ">
+  <h2>Skills</h2>
+  <table class="form-row{% for f in form.Meta.model.SKILL.keys %} field-{{ f }}{% endfor %} field-skill">
+    <tr>
+      <td></td>
+      <th>LvL</th>
+      <th>MOD</th>
+    </tr>
+    {% for name, lvl, mod in form.skill %}
+    <tr>
+      <th>{{ name }}:</th>
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=lvl %}
+      {% include "admin/charsheet/character/include/td-field-box.html" with field=mod %}
+    </tr>
+    {% endfor %}
+  </table>
+</fieldset>
+{% endwith %}
+{% endblock %}

@@ -53,24 +53,10 @@ class Expertise(models.Model):
     return self.name
 
 class Character(models.Model):
-  ATTR = {'acu': 'Accuracy',
-          'bra': 'Brawn',
-          'cor': 'Coordination',
-          'foc': 'Focus',
-          'men': 'Mentality',
-          'vit': 'Vitality'}
-  
-  SKILL = { 'ath': 'Athletics',
-            'bat': 'Battle',
-            'com': 'Common',
-            'kno': 'Knowledge',
-            'mys': 'Mystical',
-            'soc': 'Social'}
-
-  GENDERS=['Male','Female','Other']
-  RACES = ['Human','Elf','Dwarf','Half Elf','Panling','Xin\'Ar','Xin\'Er']
-  NATIONALITIES = ['Meno','Katia','Aguin','Deben']
-  STRIKERS = ['Marchon Striker','Aruhun Striker','Gaia Striker']
+  GENDERS = sorted(['Male','Female','Other'])
+  RACES = sorted(['Human','Elf','Dwarf','Half Elf','Panling','Xin\'Ar','Xin\'Er'])
+  NATIONALITIES = sorted(['Meno','Katia','Aguin','Deben'])
+  STRIKERS = sorted(['Aruhun Striker','Gaia Striker','Marchon Striker'])
 
   # Basic stuff
   name = models.CharField(max_length=50)
@@ -107,42 +93,65 @@ class Character(models.Model):
                                     default=1)
   stp = models.PositiveIntegerField(verbose_name='STP',
                                     default=0)
-
+  
   # Attributes
-  acu_vl, acu_mod = gen_attr('Accuracy')
-  bra_vl, bra_mod = gen_attr('Brawn')
-  cor_vl, cor_mod = gen_attr('Coordination')
-  foc_vl, foc_mod = gen_attr('Focus')
-  men_vl, men_mod = gen_attr('Mentality')
-  vit_vl, vit_mod = gen_attr('Vitality')
+  ATTR = {'acu': 'Accuracy',
+          'bra': 'Brawn',
+          'cor': 'Coordination',
+          'foc': 'Focus',
+          'men': 'Mentality',
+          'vit': 'Vitality'}
+
+  acu_vl, acu_mod = gen_attr(ATTR['acu'])
+  bra_vl, bra_mod = gen_attr(ATTR['bra'])
+  cor_vl, cor_mod = gen_attr(ATTR['cor'])
+  foc_vl, foc_mod = gen_attr(ATTR['foc'])
+  men_vl, men_mod = gen_attr(ATTR['men'])
+  vit_vl, vit_mod = gen_attr(ATTR['vit'])
+
 
   # Skills
-  ath_lvl, ath_mod = gen_skill('Athletics')
-  bat_lvl, bat_mod = gen_skill('Battle')
-  com_lvl, com_mod = gen_skill('Common')
-  kno_lvl, kno_mod = gen_skill('Knowledge')
-  mys_lvl, mys_mod = gen_skill('Mystical')
-  soc_lvl, soc_mod = gen_skill('Social')
+  SKILL = { 'ath': 'Athletics',
+            'bat': 'Battle',
+            'com': 'Common',
+            'kno': 'Knowledge',
+            'mys': 'Mystical',
+            'soc': 'Social'}
+
+  ath_lvl, ath_mod = gen_skill(SKILL['ath'])
+  bat_lvl, bat_mod = gen_skill(SKILL['bat'])
+  com_lvl, com_mod = gen_skill(SKILL['com'])
+  kno_lvl, kno_mod = gen_skill(SKILL['kno'])
+  mys_lvl, mys_mod = gen_skill(SKILL['mys'])
+  soc_lvl, soc_mod = gen_skill(SKILL['soc'])
 
   # Specializations
+  SPEC = {}
+
+  SPEC['ath'] = ['acrobatics','climb','dodge']
   acrobatics = models.BooleanField(default=False)
   climb = models.BooleanField(default=False)
   dodge = models.BooleanField(default=False)
   
+  SPEC['bat'] = ['axe','bow','chain_weapon']
   axe = models.BooleanField(default=False)
   bow = models.BooleanField(default=False)
   chain_weapon = models.BooleanField(default=False)
 
+  SPEC['com'] = ['steal']
   steal = models.BooleanField(default=False)
 
+  SPEC['kno'] = ['alchemy','civics','history']
   alchemy = models.BooleanField(default=False)
   civics = models.BooleanField(default=False)
   history = models.BooleanField(default=False)
 
+  SPEC['mys'] = ['channel','multitrance','sorcery']
   channel = models.BooleanField(default=False)
   multitrance = models.BooleanField(default=False)
   sorcery = models.BooleanField(default=False)
 
+  SPEC['soc'] = ['act','deceive','rhetoric']
   act = models.BooleanField(default=False)
   deceive = models.BooleanField(default=False)
   rhetoric = models.BooleanField(default=False)
